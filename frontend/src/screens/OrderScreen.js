@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import ReactToPrint from "react-to-print";
 import { PayPalButton } from "react-paypal-button-v2";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
+import Invoice from "../components/Invoice/Invoice";
 import {
   getOrderDetails,
   payOrder,
@@ -101,6 +103,8 @@ const OrderScreen = () => {
     dispatch(deliverOrder(order));
   };
 
+  const ref = useRef();
+
   return loading ? (
     <Loader />
   ) : error ? (
@@ -108,6 +112,15 @@ const OrderScreen = () => {
   ) : (
     <>
       <h1>Order {order._id}</h1>
+      <div style={{display:"none"}}>
+        <div ref={ref}>
+          <Invoice orderInfo={order} />
+        </div>
+      </div>
+      <ReactToPrint
+        trigger={() => <button>Download Invoice</button>}
+        content={() => ref.current}
+      />
       <Row>
         <Col md={8}>
           <ListGroup variant="flush">
